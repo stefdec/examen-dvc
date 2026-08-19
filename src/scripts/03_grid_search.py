@@ -1,0 +1,53 @@
+import pandas as pd
+import joblib
+
+from sklearn.model_selection import GridSearchCV
+from lightgbm import LGBMRegressor
+
+
+def grid_search(X_train, y_train):
+    # Define the model
+    model = LGBMRegressor()
+
+    # Define the hyperparameter grid
+    param_grid = {
+        "num_leaves": [15, 31],
+        "learning_rate": [0.05, 0.1],
+        "n_estimators": [100, 200],
+    }
+
+    # Set up the grid search
+    grid_search = GridSearchCV(
+        estimator=model, param_grid=param_grid, cv=3, n_jobs=-1, verbose=2
+    )
+
+    # Fit the grid search to the data
+    grid_search.fit(X_train, y_train)
+
+    return (
+        grid_search.best_estimator_,
+        grid_search.best_params_,
+        grid_search.best_score_,
+    )
+
+
+def train_best_model(X_train, y_train, best_params):
+    # Train the best model with the best hyperparameters
+    best_model = LGBMRegressor(**best_params)
+    best_model.fit(X_train, y_train)
+    return best_model
+
+
+if __name__ == "__main__":
+    # Load the training data
+    X_train = pd.read_csv("data/processed_data/X_train_scaled.csv")
+    y_train = pd.read_csv("data/processed_data/y_train.csv")
+
+    # Perform grid search to find the best model and hyperparameters
+    best_model, best_params, best_score = grid_search(X_train, y_train)
+
+    # Train the best model with the best hyperparameters
+    trained_model = train_best_model(X_train, y_train, best_params)
+
+    # save the model with pkl extension
+    joblib.dump(trained_model, "models/grid_search_lgbm_train.pkl")
