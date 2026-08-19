@@ -1,7 +1,11 @@
+import sys
+from pathlib import Path
+
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import os
 
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 from utils.utils import save_dataframe
 
 

@@ -1,6 +1,10 @@
+import sys
+from pathlib import Path
+
 import pandas as pd
 from sklearn.preprocessing import StandardScaler
 
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 from utils.utils import save_dataframe
 
 
