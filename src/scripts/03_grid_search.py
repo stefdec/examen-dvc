@@ -18,7 +18,12 @@ def grid_search(X_train, y_train):
 
     # Set up the grid search
     grid_search = GridSearchCV(
-        estimator=model, param_grid=param_grid, cv=3, n_jobs=-1, verbose=2
+        estimator=model,
+        scoring="neg_mean_squared_error",
+        param_grid=param_grid,
+        cv=3,
+        n_jobs=-1,
+        verbose=2,
     )
 
     # Fit the grid search to the data
@@ -31,13 +36,6 @@ def grid_search(X_train, y_train):
     )
 
 
-def train_best_model(X_train, y_train, best_params):
-    # Train the best model with the best hyperparameters
-    best_model = LGBMRegressor(**best_params)
-    best_model.fit(X_train, y_train)
-    return best_model
-
-
 if __name__ == "__main__":
     # Load the training data
     X_train = pd.read_csv("data/processed_data/X_train_scaled.csv")
@@ -46,8 +44,5 @@ if __name__ == "__main__":
     # Perform grid search to find the best model and hyperparameters
     best_model, best_params, best_score = grid_search(X_train, y_train)
 
-    # Train the best model with the best hyperparameters
-    trained_model = train_best_model(X_train, y_train, best_params)
-
-    # save the model with pkl extension
-    joblib.dump(trained_model, "models/grid_search_lgbm_train.pkl")
+    # save the best params in pkl format
+    joblib.dump(best_params, "models/grid_search_lgbm_best_params.pkl")
